@@ -10,6 +10,7 @@ function App() {
   const [fields, setFields] = useState<any[]>([]);
 
   useEffect(() => {
+    
     if (containerRef.current) {
       // Define your template for the PDF Designer
       const template: Template = {
@@ -44,6 +45,15 @@ function App() {
             type: 'text',
             position: { x: 10, y: 10 },
             content:'HIIII',
+            width: 10,
+            height: 10,
+          },]
+
+          ,[ {
+            name: 'bbbbb',
+            type: 'text',
+            position: { x: 100, y: 100 },
+            content:'aeafeafe',
             width: 10,
             height: 10,
           },]
