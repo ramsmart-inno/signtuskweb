@@ -5,6 +5,7 @@
   "dependencies": {
     "@pmee/common": "^0.0.1",
     "@pmee/generator": "^0.0.1",
+    "@pmee/schemas": "^0.0.1",
     "@pmee/ui": "^0.0.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -17,6 +18,7 @@
     "pdf-to-base64": "^1.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^7.0.1",
     "react-scripts": "5.0.1",
     "signature_pad": "^4.1.6",
     "typescript": "^4.9.5",
