@@ -1,139 +1,3 @@
-// import React, { useEffect, useRef, useState } from 'react';
-// import './App.css';
-// import { Designer } from '@pmee/ui';
-// import { text, image, barcodes, dateTime } from '@pmee/schemas';
-// import type { Template } from '@pmee/common';
-// import { generatePDF } from './helper';
-
-// import { basePdfUrl, base64Image, templateSchemas } from './variables';
-
-// function App() {
-//   const containerRef = useRef<HTMLDivElement>(null);
-//   const designerRef = useRef<Designer | null>(null);
-//   const [fields, setFields] = useState<any[]>([]);
-
-//   useEffect(() => {
-    
-//     if (containerRef.current) {
-//       // Define your template for the PDF Designer
-//       const template: Template = {
-//         basePdf: basePdfUrl, // Replace with your base PDF data URL
-//         schemas: [
-//          [ {
-//             name: 'Text',
-//             type: 'text',
-//             position: { x: 100, y: 60 },
-//             content: 'aeafeafeaefsefsfs',
-//             width: 10,
-//             height: 10,
-//           },
-//           {
-//             name: 'qrCode',
-//             type: 'qrcode',
-//             content: 'https://pdfme.com/',
-//             position: { x: 100, y: 70 },
-//             width: 30,
-//             height: 30,
-//             rotate: 0,
-//           },
-//           {
-//             name: "photo",
-//             type: "image",
-//             content: base64Image,
-//             position: {
-//               "x": 24.99,
-//               "y": 65.61
-//             },
-//             width: 60.66,
-//             height: 93.78
-//           },
-//           {
-//             name: "dateTime",
-//             type: "dateTime",
-//             position: { "x": 50, "y": 200 },
-//             width: 45,
-//             height: 10,
-//             readOnly:false,
-//             format: "yyyy/MM/dd HH:mm",  // DateTime format
-//             placeholder: "Select Date and Time",
-//             content: "2024/11/19 13:28",
-            
-//           }
-        
-//         ]
-//         ],
-//       };
-
-//       // Initialize the Designer
-//       const designer = new Designer({
-//         domContainer: containerRef.current,
-//         template,
-//         plugins:{
-//           text,
-//           image,
-//           dateTime,
-//           qrcode: barcodes.qrcode,
-//         },
-//         options: {
-//           // labels: {
-//           //   fieldsList: '入力項目一覧ビュー', // override the label for the edit button
-//           //   youCanCreateYourOwnLabel: '独自のラベルを作成できます', // add a new label for the custom plugin
-//           // },
-//         },
-//       });
-
-//       // Store the Designer instance in the ref
-//       designerRef.current = designer;
-
-//       // Optional: Log the initial template fields
-//       console.log('Initial Template:', designer.getTemplate());
-
-//       setFields(template.schemas);
-
-//       return () => {
-//         designer.destroy(); // Clean up the designer instance on unmount
-//         designerRef.current = null;
-//       };
-//     }
-//   }, []);
-
-//   // Function to get all fields from the Designer
-//   const handleGetAllFields = () => {
-//     if (designerRef.current) {
-//       const currentTemplate = designerRef.current.getTemplate();
-//       setFields(currentTemplate.schemas); // Update state with the latest fields
-//       console.log('All Template Fields:', currentTemplate.schemas);
-//     }
-//   };
-
-
-
-
-
-//   return (
-//     <div className="App">
-
-//     <button onClick={handleGetAllFields} style={{ marginBottom: '20px' }}>
-//         Get All Template Fields
-//       </button>
-//       <button onClick={() => generatePDF(designerRef.current)} style={{ marginBottom: '20px' }}>
-//         Download PDF
-//       </button>
-
-//       <div
-//         ref={containerRef}
-//         style={{ width: '100%', height: '80vh', border: '1px solid #ccc' }}
-//       ></div>
-//       <div style={{ marginTop: '20px' }}>
-//         <h3>Current Fields:</h3>
-//         <pre>{JSON.stringify(fields, null, 2)}</pre>
-//       </div>
-//     </div>
-//   );
-// }
-// export default App;
-
-
 // Main Index.js or App.js
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -142,30 +6,49 @@ import { Designer } from '@pmee/ui';
 import { text, image, barcodes, dateTime } from '@pmee/schemas';
 import { generatePDF } from './helper';
 import './App.css';
-import { base64Image, basePdfUrl, updateBaseImageUrl, updateBasePdfUrl} from './variables';
+import { base64Image, basePdfUrl, updateBaseImageUrl, updateBasePdfUrl, updateImageDimensions, imageDimensions } from './variables';
 
 // Main Screen
 const MainScreen = () => {
   const [base64Pdf, setBase64Pdf] = useState<string>('');
   const [base64Image, setBase64Image] = useState<string>('');
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'pdf' | 'image') => {
+    console.log(`File upload triggered for type: ${type}`);
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
 
       reader.onload = () => {
         const base64String = reader.result as string;
+        console.log('Base64 String:', base64String);
 
         if (type === 'pdf') {
           setBase64Pdf(base64String);
           updateBasePdfUrl(base64String); // Update variable
         } else if (type === 'image') {
-          setBase64Image(base64String);
-          updateBaseImageUrl(base64String); // Update variable
+          if (file.type.startsWith('image/')) {
+            const img = new Image();
+            img.onload = () => {
+              console.log(`Image loaded. Width: ${img.width}, Height: ${img.height}`);
+              setImageDimensions({ width: img.width, height: img.height });
+              updateImageDimensions(img.width, img.height);
+              setBase64Image(base64String);
+              updateBaseImageUrl(base64String);
+            };
+            img.onerror = () => {
+              console.error('Failed to load the image.');
+            };
+            img.src = base64String;
+          } else {
+            console.error('Uploaded file is not an image.');
+          }
         }
       };
-
       reader.readAsDataURL(file);
     }
   };
@@ -173,7 +56,7 @@ const MainScreen = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h1 style={{ marginBottom: '20px' }}>Main Screen</h1>
-  
+
       {/* Upload PDF */}
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="upload-pdf" style={{ marginRight: '10px' }}>Upload PDF:</label>
@@ -184,7 +67,7 @@ const MainScreen = () => {
           onChange={(event) => handleFileUpload(event, 'pdf')}
         />
       </div>
-  
+
       {/* Upload Image */}
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="upload-image" style={{ marginRight: '10px' }}>Upload Image:</label>
@@ -195,7 +78,27 @@ const MainScreen = () => {
           onChange={(event) => handleFileUpload(event, 'image')}
         />
       </div>
-  
+
+      {/* Dropdown Field */}
+      <div style={{ marginBottom: '20px' }}>
+        <label htmlFor="dropdown-field" style={{ marginRight: '10px' }}>Select an Option:</label>
+        <select id="dropdown-field" style={{ padding: '5px' }} onChange={(e) => console.log(`Selected: ${e.target.value}`)}>
+          <option value="one">One</option>
+          <option value="two">Two</option>
+          <option value="three">Three</option>
+        </select>
+      </div>
+
+      {/* Display Image Dimensions */}
+      {base64Image && (
+        <div>
+          <h3>Uploaded Image:</h3>
+          <img src={base64Image} alt="Uploaded" style={{ maxWidth: '200px', maxHeight: '200px' }} />
+          <p>Width: {imageDimensions.width}px</p>
+          <p>Height: {imageDimensions.height}px</p>
+        </div>
+      )}
+
       {/* Navigation Links */}
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
         <Link to="/screen-a" style={styles.button}>
@@ -207,7 +110,7 @@ const MainScreen = () => {
       </div>
     </div>
   );
-  
+
 };
 
 // Screen A (Your Designer Component)
@@ -244,8 +147,8 @@ const ScreenA = () => {
               type: 'image',
               content: base64Image,
               position: { x: 24.99, y: 65.61 },
-              width: 60.66,
-              height: 93.78,
+              width: 100,
+              height: 100,
             },
             {
               name: 'dateTime',
