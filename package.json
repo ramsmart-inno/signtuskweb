@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hugocxl/react-to-image": "^0.0.9",
     "@pmee/common": "^0.0.1",
     "@pmee/generator": "^0.0.1",
     "@pmee/schemas": "^0.0.1",
@@ -20,6 +21,7 @@
     "qr-border-plugin": "^0.0.10",
     "qr-code-styling": "^1.8.4",
     "react": "^18.3.1",
+    "react-curved-text": "^3.0.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.1",
     "react-scripts": "5.0.1",
@@ -50,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-curved-text": "^2.0.3"
   }
 }

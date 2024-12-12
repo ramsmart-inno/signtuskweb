@@ -7,19 +7,22 @@ import { text, image, barcodes, dateTime } from '@pmee/schemas';
 import { generatePDF } from './helper';
 import './App.css';
 import { toPng } from 'html-to-image';
-import { base64Image, basePdfUrl, updateBaseImageUrl, updateBasePdfUrl, updateImageDimensions, imageDimensions } from './variables';
+import { base64Image, basePdfUrl, updateBaseImageUrl, updateBasePdfUrl, updateImageDimensions, imageDimensionss } from './variables';
 import QRCodeStyling, { DrawType, TypeNumber, Mode, ErrorCorrectionLevel, DotType, CornerSquareType, CornerDotType, FileExtension, Options } from "qr-code-styling";
-
+import { useToPng } from '@hugocxl/react-to-image'
+import ReactCurvedText from "react-curved-text";
 
 // Main Screen
 const MainScreen = () => {
   const [base64Pdf, setBase64Pdf] = useState<string>('');
   const [imgSrc, setImgSrc] = useState<string>('');
+  const [imgCardSrc, setCardImgSrc] = useState<string>('');
   const [base64Image, setBase64Image] = useState<string>('');
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
   });
+
 
   const [options, setOptions] = useState<Options>({
     width: 300,
@@ -27,7 +30,7 @@ const MainScreen = () => {
     type: 'svg' as DrawType,
     data: 'http://qr-code-styling.com',
     image: '/favicon.ico',
-    margin: 10,
+    margin: 1,
     qrOptions: {
       typeNumber: 0 as TypeNumber,
       mode: 'Byte' as Mode,
@@ -49,7 +52,7 @@ const MainScreen = () => {
       type: 'rounded' as DotType
     },
     backgroundOptions: {
-      color: '#5FD4F3',
+      color: '#FFFFFF',
       // gradient: {
       //   type: 'linear', // 'radial'
       //   rotation: 0,
@@ -77,12 +80,47 @@ const MainScreen = () => {
   });
   const [fileExt, setFileExt] = useState<FileExtension>("svg");
   const [qrCode] = useState<QRCodeStyling>(new QRCodeStyling(options));
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef(null);
+  const cardRef = useRef<HTMLDivElement>(null); 
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
 
   useEffect(() => {
-    if (ref.current) {
-      qrCode.append(ref.current);
+    if (cardRef.current) {
+      const { width, height } = cardRef.current.getBoundingClientRect();
+      updateImageDimensions(width, height);
+      setDimensions({ width, height });
     }
+  }, [cardRef]);  // This effect runs when the component mounts and when `reff` changes
+
+
+  const [_, convert, reff] = useToPng<HTMLDivElement>({
+    quality: 0.8,
+    onSuccess: data => {
+      const link = document.createElement('a');
+      link.download = 'my-image-name.jpeg';
+      link.href = data;
+      link.click();
+    }
+  })
+
+
+  useEffect(() => {
+    const generateImage = async () => {
+      if (ref.current) {
+        qrCode.append(ref.current);
+
+        try {
+          // Generate PNG from the QR code and update state
+          const dataUrl = await toPng(ref.current, { width: 300, height: 300 });
+          setImgSrc(dataUrl);
+        } catch (error) {
+          console.error("Failed to generate QR code image:", error);
+        }
+      }
+    };
+
+    generateImage();
   }, [qrCode, ref]);
 
   useEffect(() => {
@@ -90,9 +128,24 @@ const MainScreen = () => {
     qrCode.update(options);
   }, [qrCode, options]);
 
+  const handleGenerateStamp = async () => {
+    if (cardRef.current) {
+      try {
+        const dataUrl = await toPng(cardRef.current, { width: maxTextWidth + 60, height: 100, backgroundColor: 'rgba(0, 0, 0, 0)'  });
+        setCardImgSrc(dataUrl);  // Set the generated PNG
+        console.log(dataUrl.toString());
+        console.log(dataUrl.length);
+      
+        updateBaseImageUrl("data:image/png;"+dataUrl)
+      } catch (error) {
+        console.error("Failed to generate image:", error);
+      }
+    }
+  };
+
   const onDataChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (ref.current) {
-      const dataUrl = await toPng(ref.current); // Convert ref to an image
+      const dataUrl = await toPng(ref.current, { width: 300, height: 300 }); // Convert ref to an image
       setImgSrc(dataUrl); // Update img src
     }
     setOptions(options => ({
@@ -148,9 +201,45 @@ const MainScreen = () => {
     }
   };
 
+  function getTextWidth(text: string, font = '16px Arial') {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) {
+      // Fallback if context is null
+      console.error("Unable to get canvas context");
+      return 0;
+    }
+  
+    context.font = font;
+    return context.measureText(text).width;
+  }
+
+  const maxTextWidth = Math.max(
+    getTextWidth("Signed by: Alice"),
+    getTextWidth("alice@example.com"),
+    getTextWidth("+00 00000 00000"),
+    getTextWidth("2021-06-24 08:00:00 CEST"),
+    getTextWidth("https://example.com")
+  );
+
+  const calculatedWidth = `${Math.min(maxTextWidth + 6, 300)}px`; 
+
   return (
     <div style={{ padding: '20px' }}>
       <h1 style={{ marginBottom: '20px' }}>Main Screen</h1>
+
+      <h2>QR Code Generator</h2>
+      <div ref={ref} />
+      <div style={styles.inputWrapper}>
+        <input value={options.data} onChange={onDataChange} style={styles.inputBox} />
+        <select onChange={onExtensionChange} value={fileExt}>
+          <option value="svg">SVG</option>
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="webp">WEBP</option>
+        </select>
+        <button onClick={onDownloadClick}>Download</button>
+      </div>
 
       {/* Upload PDF */}
       <div style={{ marginBottom: '20px' }}>
@@ -194,29 +283,68 @@ const MainScreen = () => {
         </div>
       )}
 
-      <h2>QR Code Generator</h2>
-      <div ref={ref} />
-      <div style={styles.inputWrapper}>
-        <input value={options.data} onChange={onDataChange} style={styles.inputBox} />
-        <select onChange={onExtensionChange} value={fileExt}>
-          <option value="svg">SVG</option>
-          <option value="png">PNG</option>
-          <option value="jpeg">JPEG</option>
-          <option value="webp">WEBP</option>
-        </select>
-        <button onClick={onDownloadClick}>Download</button>
-      </div>
 
-      <h2>Sample Stamp Card</h2>
-      <div style={styles.row}>
-        <img src={imgSrc || "https://placehold.co/100x100"} alt="QR code" style={styles.qrCode} />
-        <div style={styles.details}>
-          <p style={{ ...styles.detailText, ...styles.boldText }}>
-            Signed by: Alice &lt;alice@example.com&gt;
-          </p>
-          <p style={styles.detailText}>2021-06-24 08:00:00 CEST</p>
-          <p style={styles.detailText}>https://example.com</p>
+
+      <div>
+        <button onClick={handleGenerateStamp}>Generate Stamp</button>
+        <button onClick={convert}>Download</button>
+        <div ref={cardRef} style={{ padding: "20px", background: "#fff" }}>
+          <div ref={reff} style={{
+            ...styles.row, width: calculatedWidth,   // Adjust width
+            height: "auto", 
+            padding: "6px",
+            backgroundColor: "#fff",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+          }}>
+            <img src={imgSrc || "https://placehold.co/100x100"} alt="QR code" style={{
+              ...styles.qrCode,
+              width: "60px",  // Fixed size
+              height: "60px",
+            }} />
+            <div style={styles.details}>
+              <p style={{ ...styles.detailText, ...styles.boldText }}>
+                Signed by: Alice
+              </p>
+              <p style={{ ...styles.detailText, ...styles.boldText }}>
+                alice@example.com
+              </p>
+              <p style={{ ...styles.detailText, ...styles.boldText }}>
+                +00 00000 00000
+              </p>
+              <p style={styles.detailText}>2021-06-24 08:00:00 CEST</p>
+              <p style={styles.detailText}>https://example.com</p>
+            </div>
+          </div>
         </div>
+
+        {/* <div>
+          <img src={imgSrc || "https://placehold.co/100x100"} alt="QR code" style={{
+              ...styles.qrCode,
+              width: "60px",  // Fixed size
+              height: "60px",
+            }} />
+            <ReactCurvedText
+            width={370}
+            height={300}
+            cx={196}
+            cy={204}
+            rx={100}
+            ry={100}
+            startOffset={20}
+            reversed={true}
+            text="ReactScriptComReactScript"
+            textProps={{ style: { fontSize: '25' } }}
+            tspanProps={{ dy: '-20' }}
+          />
+
+        </div> */}
+
+        {imgCardSrc && (
+          <div>
+            <img src={imgCardSrc || "https://placehold.co/100x100"} alt="Generated Stamp" />
+          </div>
+        )}
       </div>
 
       {/* Navigation Links */}
@@ -267,8 +395,8 @@ const ScreenA = () => {
               type: 'image',
               content: base64Image,
               position: { x: 24.99, y: 65.61 },
-              width: 100,
-              height: 100,
+              width: 40,
+              height: 16,
             },
             {
               name: 'dateTime',
@@ -409,7 +537,7 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-  }, 
+  },
   row: {
     display: 'flex',
     alignItems: 'center',
@@ -423,7 +551,9 @@ const styles = {
   },
   details: {
     display: 'flex',
-    flexDirection: 'column' as const, 
+    flexDirection: 'column' as const,
+    alignItems: 'flex-start',    // Align items to the start of the cross-axis
+    justifyContent: 'flex-start'
   },
   detailText: {
     margin: 0, // Reset default margins
