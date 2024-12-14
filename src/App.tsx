@@ -482,15 +482,15 @@ const ScreenB = () => {
   const [fields, setFields] = useState<any[]>([]);
 
   useEffect(() => {
-    const font: Font = {
-      serif: {
-        data: 'http://fonts.gstatic.com/s/abhayalibre/v1/wBjdF6T34NCo7wQYXgzrc_qsay_1ZmRGmC8pVRdIfAg.ttf',
-        fallback: true,
-      },
-      seriff: {
-        data: 'http://fonts.gstatic.com/s/abhayalibre/v1/zTLc5Jxv6yvb1nHyqBasVy3USBnSvpkopQaUR-2r7iU.ttf',
-      },
-    };
+  //   const font: Font = {
+  //     serif: {
+  //       data: 'http://fonts.gstatic.com/s/abhayalibre/v1/wBjdF6T34NCo7wQYXgzrc_qsay_1ZmRGmC8pVRdIfAg.ttf',
+  //       fallback: true,
+  //     },
+  //     seriff: {
+  //       data: 'http://fonts.gstatic.com/s/abhayalibre/v1/zTLc5Jxv6yvb1nHyqBasVy3USBnSvpkopQaUR-2r7iU.ttf',
+  //     },
+  //   };
 
     
 
@@ -531,7 +531,7 @@ const ScreenB = () => {
               height: 6.09,
               alignment: "center",
               verticalAlignment: "middle",
-              fontName:'serif',
+              // fontName:'serif',
               fontSize: 12
             }
           ],
@@ -539,13 +539,12 @@ const ScreenB = () => {
       };
 
 
-
       const designer = new Designer({
         domContainer: containerRef.current,
         template,
-        options:{
-          font
-        },
+        // options:{
+        //   font
+        // },
         plugins: {
           text,
           image,
@@ -554,7 +553,7 @@ const ScreenB = () => {
         },
       });
 
-      designer.updateOptions({ font });
+      // designer.updateOptions({ font });
 
       designerRef.current = designer;
       setFields(template.schemas);
