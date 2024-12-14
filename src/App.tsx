@@ -508,7 +508,7 @@ const ScreenB = () => {
               height: 6.09,
               alignment: "center",
               verticalAlignment: "middle",
-              fontName:'serif',
+              // fontName:'serif',
               fontSize: 12
             },
             {
