@@ -58,6 +58,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-curved-text": "^2.0.3"
+    "@types/react-curved-text": "^2.0.3",
+    "@babel/plugin-transform-private-property-in-object": "7.25.9"
   }
 }

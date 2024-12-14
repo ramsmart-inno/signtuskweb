@@ -1,14 +1,14 @@
 // Main Index.js or App.js
 
 import React, { useEffect, useRef, useState, ChangeEvent } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Designer } from '@pmee/ui';
 import { Template, Font } from '@pmee/common';
 import { text, image, barcodes, dateTime } from '@pmee/schemas';
 import { generatePDF } from './helper';
 import './App.css';
 import { toPng } from 'html-to-image';
-import { base64Image, basePdfUrl, base64Document, updateBaseImageUrl, updateBasePdfUrl, updateImageDimensions, imageDimensionss, updateSignerName, signerName } from './variables';
+import { base64Image, basePdfUrl, base64Document, updateBaseImageUrl, updateBasePdfUrl, updateImageDimensions, updateSignerName, signerName } from './variables';
 import QRCodeStyling, { DrawType, TypeNumber, Mode, ErrorCorrectionLevel, DotType, CornerSquareType, CornerDotType, FileExtension, Options } from "qr-code-styling";
 import { useToPng } from '@hugocxl/react-to-image'
 import { Col, Row } from 'antd';
@@ -83,14 +83,14 @@ const MainScreen = () => {
   const [qrCode] = useState<QRCodeStyling>(new QRCodeStyling(options));
   const ref = useRef(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  // const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
 
   useEffect(() => {
     if (cardRef.current) {
       const { width, height } = cardRef.current.getBoundingClientRect();
       updateImageDimensions(width, height);
-      setDimensions({ width, height });
+      // setDimensions({ width, height });
     }
   }, [cardRef]);  // This effect runs when the component mounts and when `reff` changes
 

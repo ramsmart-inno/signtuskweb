@@ -160,6 +160,7 @@ import {
   export const generatePDF = async (currentRef: Designer | Form | Viewer | null) => {
     if (!currentRef) return;
     const template = currentRef.getTemplate();
+    // eslint-disable-next-line
     const options = currentRef.getOptions();
     const inputs =
       typeof (currentRef as Viewer | Form).getInputs === 'function'
