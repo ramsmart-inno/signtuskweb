@@ -160,7 +160,6 @@ import {
   export const generatePDF = async (currentRef: Designer | Form | Viewer | null) => {
     if (!currentRef) return;
     const template = currentRef.getTemplate();
-    // eslint-disable-next-line
     const options = currentRef.getOptions();
     const inputs =
       typeof (currentRef as Viewer | Form).getInputs === 'function'
@@ -187,7 +186,7 @@ import {
         plugins: getPlugins(),
       });
   
-      const blob = new Blob([pdf.buffer], { type: 'application/pdf' });
+      const blob = new Blob([pdf.buffer as ArrayBuffer], { type: 'application/pdf' });
       window.open(URL.createObjectURL(blob));
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

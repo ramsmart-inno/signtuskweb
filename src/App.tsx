@@ -389,7 +389,7 @@ const ScreenA = () => {
               name: 'Text',
               type: 'text',
               position: { x: 100, y: 60 },
-              content: 'aeafeafeaefsefsfs',
+              content: signerName,
               width: 10,
               height: 10,
             },
@@ -500,7 +500,7 @@ const ScreenB = () => {
         schemas: [
           [
             {
-              name: 'Text',
+              name: 'ONe',
               type: 'text',
               position: {x: 85.71, y: 209.22},
               content: signerName,
@@ -520,7 +520,7 @@ const ScreenB = () => {
               height: 24,
             },
             {
-              name: 'Textee',
+              name: 'Two',
               type: 'text',
               position: {
                 x: 32.27,
