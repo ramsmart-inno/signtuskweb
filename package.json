@@ -7,7 +7,7 @@
     "@pmee/common": "^0.0.1",
     "@pmee/generator": "^0.0.1",
     "@pmee/schemas": "^0.0.1",
-    "@pmee/ui": "^0.0.4",
+    "@pmee/ui": "^0.0.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -15,6 +15,7 @@
     "@types/node": "^16.18.119",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "antd": "^5.22.4",
     "axios": "^1.7.8",
     "html-to-image": "^1.11.11",
     "pdf-to-base64": "^1.0.3",
@@ -39,7 +40,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "no-template-curly-in-string": "off"
+    }
   },
   "browserslist": {
     "production": [

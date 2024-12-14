@@ -165,16 +165,23 @@ import {
       typeof (currentRef as Viewer | Form).getInputs === 'function'
         ? (currentRef as Viewer | Form).getInputs()
         : getInputFromTemplate(template);
-    // const font = await getFontsData();
+        const font: Font = {
+          serif: {
+            data: 'http://fonts.gstatic.com/s/abhayalibre/v1/wBjdF6T34NCo7wQYXgzrc_qsay_1ZmRGmC8pVRdIfAg.ttf',
+            fallback: true,
+          },
+          seriff: {
+            data: 'http://fonts.gstatic.com/s/abhayalibre/v1/zTLc5Jxv6yvb1nHyqBasVy3USBnSvpkopQaUR-2r7iU.ttf',
+          },
+        };
+    
   
     try {
       const pdf = await generate({
         template,
         inputs,
         options: {
-        //   font,
-          lang: options.lang,
-          title: 'pdfme',
+          font
         },
         plugins: getPlugins(),
       });
