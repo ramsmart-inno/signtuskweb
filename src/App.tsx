@@ -11,8 +11,6 @@ import { toPng } from 'html-to-image';
 import { base64Image, basePdfUrl, base64Document, updateBaseImageUrl, updateBasePdfUrl, updateImageDimensions, imageDimensionss, updateSignerName, signerName } from './variables';
 import QRCodeStyling, { DrawType, TypeNumber, Mode, ErrorCorrectionLevel, DotType, CornerSquareType, CornerDotType, FileExtension, Options } from "qr-code-styling";
 import { useToPng } from '@hugocxl/react-to-image'
-import "./font/Roboto-Bold.ttf";
-// import "antd/dist/antd.css";
 import { Col, Row } from 'antd';
 
 // Main Screen
