@@ -165,28 +165,32 @@ import {
       typeof (currentRef as Viewer | Form).getInputs === 'function'
         ? (currentRef as Viewer | Form).getInputs()
         : getInputFromTemplate(template);
-        const font: Font = {
-          serif: {
-            data: 'http://fonts.gstatic.com/s/abhayalibre/v1/wBjdF6T34NCo7wQYXgzrc_qsay_1ZmRGmC8pVRdIfAg.ttf',
-            fallback: true,
-          },
-          seriff: {
-            data: 'http://fonts.gstatic.com/s/abhayalibre/v1/zTLc5Jxv6yvb1nHyqBasVy3USBnSvpkopQaUR-2r7iU.ttf',
-          },
-        };
+        // const font: Font = {
+        //   serif: {
+        //     data: 'http://fonts.gstatic.com/s/abhayalibre/v1/wBjdF6T34NCo7wQYXgzrc_qsay_1ZmRGmC8pVRdIfAg.ttf',
+        //     fallback: true,
+        //   },
+        //   seriff: {
+        //     data: 'http://fonts.gstatic.com/s/abhayalibre/v1/zTLc5Jxv6yvb1nHyqBasVy3USBnSvpkopQaUR-2r7iU.ttf',
+        //   },
+        // };
     
   
     try {
       const pdf = await generate({
         template,
         inputs,
-        options: {
-          font
-        },
+        // options: {
+        //   font
+        // },
         plugins: getPlugins(),
       });
+      console.log("pdf");
+      console.log(pdf);
   
       const blob = new Blob([pdf.buffer as ArrayBuffer], { type: 'application/pdf' });
+      console.log("blob");
+      console.log(blob); 
       window.open(URL.createObjectURL(blob));
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
