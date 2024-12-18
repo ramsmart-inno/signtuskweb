@@ -7,7 +7,7 @@
     "@pmee/common": "^0.0.1",
     "@pmee/generator": "^0.0.1",
     "@pmee/schemas": "^0.0.1",
-    "@pmee/ui": "^0.0.7",
+    "@pmee/ui": "^0.0.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

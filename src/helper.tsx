@@ -195,6 +195,10 @@ import {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
+      console.log("URL");
+      console.log(url);
+      console.log("a");
+      console.log(a);
       a.download = 'generated.pdf';
       a.click();
       URL.revokeObjectURL(url);
