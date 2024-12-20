@@ -24,6 +24,25 @@ const MainScreen = () => {
     height: 0,
   });
 
+  const [data, setData] = useState({
+    basePdfUrl: '',
+    base64Document: '',
+    base64Image: '',
+  });
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const basePdfUrl = queryParams.get('basePdfUrl') || '';
+    const base64Document = queryParams.get('base64Document') || '';
+    const base64Image = queryParams.get('base64Image') || '';
+
+    setData({
+      basePdfUrl,
+      base64Document,
+      base64Image,
+    });
+  }, []);
+
 
   const [options, setOptions] = useState<Options>({
     width: 300,
@@ -367,6 +386,13 @@ const MainScreen = () => {
           </Link>
         </div>
         </Col>
+
+        <Col>    <div>
+      <h1>PDF Data</h1>
+      <p>PDF URL: {data.basePdfUrl}</p>
+      <p>Base64 Document: {data.base64Document}</p>
+      <p>Base64 Image: {data.base64Image}</p>
+    </div></Col>
       </Row>
     </div>
   );
@@ -533,8 +559,23 @@ const ScreenB = () => {
               verticalAlignment: "middle",
               // fontName:'serif',
               fontSize: 12
+            },
+            {
+              name: 'Three',
+              type: 'text',
+              position: {
+                x: 32.27,
+                y: 200.94
+              },
+              content: signerName,
+              width: 65.04,
+              height: 6.09,
+              alignment: "center",
+              verticalAlignment: "middle",
+              // fontName:'serif',
+              fontSize: 12
             }
-          ],
+          ]
         ],
       };
 
@@ -557,6 +598,7 @@ const ScreenB = () => {
 
       designerRef.current = designer;
       setFields(template.schemas);
+      console.log(template.schemas.entries);
 
       return () => {
         designer.destroy();
